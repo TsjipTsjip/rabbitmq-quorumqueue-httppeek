@@ -16,7 +16,7 @@ jobs:
         uses: erlef/setup-beam@v1
         with:
           otp-version: '26'
-          elixir-version: ''
+          elixir-version: '1.16.2-otp-26'
 
       - name: Checkout rabbitmq-server
         uses: actions/checkout@v6

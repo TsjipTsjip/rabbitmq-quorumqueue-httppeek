@@ -13,7 +13,6 @@ mise.toml
 *.orig
 *.tmp
 .idea/
-.tool-versions
 .vscode/
 .DS_Store
 
