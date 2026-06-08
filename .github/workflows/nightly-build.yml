@@ -1,4 +1,4 @@
-name: Build and Upload .ez Artifact
+name: Nightly build
 
 on:
   push:
