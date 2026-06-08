@@ -1,0 +1,54 @@
+name: Build and Upload .ez Artifact
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Erlang/OTP
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: '26'
+          elixir-version: ''
+
+      - name: Checkout rabbitmq-server
+        uses: actions/checkout@v6
+        with:
+          repository: 'rabbitmq/rabbitmq-server'
+          ref: 'v4.3.1'
+
+      - name: Checkout rabbitmq-quorumqueue-httppeek into deps
+        uses: actions/checkout@v6
+        with:
+          path: 'deps'
+
+      - name: List working directory structure
+        run: |
+          echo "== workdir root =="
+          ls -a
+          echo "== deps subfolder =="
+          ls -a deps
+
+      - name: Build .ez artifacts
+        run: |
+          cd deps/rabbitmq-quorumqueue-httppeek
+          make DIST_AS_EZS=yes dist
+
+      - name: List .ez artifacts
+        run: ls deps/rabbitmq-quorumqueue-httppeek/plugins
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: rabbitmq-quorumqueue-httppeek-ez
+          path: deps/rabbitmq-quorumqueue-httppeek/plugins/rabbitmq-quorumqueue-httppeek*.ez
+          archive: false
+          retention-days: 30
+          if-no-files-found: 'error'
