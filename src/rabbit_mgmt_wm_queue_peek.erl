@@ -27,16 +27,16 @@ is_authorized(ReqData, Context) ->
 
 %% GET HANDLER - Main logic method that produces a json response, wired above by content_types_provided into cowboy.
 to_json(ReqData, Context) ->
-    VHost = rabbit_mgmt_util:vhost(ReqData),
+    VHost = rabbit_mgmt_util:vhost(ReqData), %% Returns either not_found or the VHost's name as an atom.
     QueueName = rabbit_mgmt_util:id(queue, ReqData),
     PositionStr = rabbit_mgmt_util:id(position, ReqData),
     
     %% Check vhost
-    case rabbit_vhost:exists(VHost) of
-        false ->
+    case VHost of
+        not_found -> %% VHost doesn't exist, return the error.
             rabbit_mgmt_util:not_found(
               <<"Target vHost does not exist">>, ReqData, Context);
-        true ->
+        _ -> %% VHost does exist, continue.
             %% Check queue
             case rabbit_mgmt_wm_queue:queue(ReqData) of
                 not_found ->
