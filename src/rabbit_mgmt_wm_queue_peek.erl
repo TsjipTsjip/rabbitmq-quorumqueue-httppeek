@@ -35,13 +35,13 @@ to_json(ReqData, Context) ->
     case rabbit_vhost:exists(VHost) of
         false ->
             rabbit_mgmt_util:not_found(
-              <<"vhost">>, VHost, ReqData, Context);
+              <<"Target vHost does not exist">>, ReqData, Context);
         true ->
             %% Check queue
             case rabbit_mgmt_wm_queue:queue(ReqData) of
                 not_found ->
                     rabbit_mgmt_util:not_found(
-                      <<"queue">>, QueueName, ReqData, Context);
+                      <<"Target queue does not exist">>, ReqData, Context);
                 _ ->
                     %% Parse and validate position
                     case parse_position(PositionStr) of
@@ -65,7 +65,7 @@ to_json(ReqData, Context) ->
                                     %% In a programmer's last famous words, this error case should never be hit as we've checked the existence of the queue prior.
                                     %% But... rabbit_quorum_queue:peek doesn't know about the queue, we have nothing to return. Match the same error output anyways.
                                     rabbit_mgmt_util:not_found(
-                                      <<"queue">>, QueueName, ReqData, Context);
+                                      <<"Target queue does not exist">>, ReqData, Context);
                                 {error, no_message_at_pos} ->
                                     rabbit_mgmt_util:bad_request(
                                       <<"Target queue does not have a message at that position">>,
